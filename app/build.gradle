@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
+
+    defaultConfig {
+        applicationId "org.trackmont.manager"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 14
+        versionName "2.4"
+    }
+
+    productFlavors {
+        regular
+        google
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:design:26.0.1'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.0'
+    googleCompile 'com.google.firebase:firebase-core:11.2.0'
+    googleCompile 'com.google.firebase:firebase-crash:11.2.0'
+}
+
+if (getGradle().getStartParameter().getTaskRequests().toString().contains("Google")) {
+    apply plugin: 'com.google.gms.google-services'
+
+    task copyJson(type: Copy) {
+        from '../../trackmont-shared/google-services'
+        into '.'
+        include 'trackmont-manager-android.json'
+        rename('trackmont-manager-android.json', 'google-services.json')
+    }
+
+    afterEvaluate {
+        preBuild.dependsOn copyJson
+    }
+}
